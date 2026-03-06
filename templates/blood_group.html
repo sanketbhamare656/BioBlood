@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Groups Information - BioBlood ID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #e53935;
+        }
+
+        .nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: #e53935;
+        }
+
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #e53935;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #e53935;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+        }
+
+        /* Blood Groups Section */
+        .blood-groups-section {
+            padding: 80px 0;
+        }
+
+        .blood-groups-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #222;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        /* Blood Groups Grid */
+        .blood-groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .blood-group-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #e53935;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .blood-group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .blood-group-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .blood-group-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .blood-group-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e53935;
+        }
+
+        .blood-group-info {
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Compatibility Section */
+        .compatibility-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .compatibility-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #222;
+            text-align: center;
+        }
+
+        .compatibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .compatibility-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .compatibility-blood-group {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e53935;
+            margin-bottom: 10px;
+        }
+
+        .compatibility-details {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Facts Section */
+        .facts-section {
+            margin-top: 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .facts-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .fact-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .fact-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .fact-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .blood-groups-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .compatibility-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .facts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .blood-group-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">🩸</div>
+                <span class="logo-text">BioBlood ID</span>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/detect">Detection</a></li>
+                    <li><a href="#" class="active">Blood Groups</a></li>
+                    <!-- <li><a href="#">History</a></li>
+                    <li><a href="#">Help</a></li> -->
+                </ul>
+            </nav>
+            <!-- <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+                <a href="{{ url_for('detection.logout') }}" class="logout-btn">Logout</a>
+            </div> -->
+        </div>
+    </header>
+
+    <!-- Blood Groups Section -->
+    <section class="blood-groups-section">
+        <div class="container">
+            <div class="blood-groups-container">
+                <h1 class="section-title">Blood Groups Information</h1>
+                <p class="section-subtitle">Complete guide to blood types, compatibility, and important facts</p>
+                
+                <!-- Blood Groups Grid -->
+                <div class="blood-groups-grid">
+                    <!-- A+ -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">A+</div>
+                            <h2 class="blood-group-title">A Positive</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">27% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">A+, AB+</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">A+, A-, O+, O-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Contains A antigen</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- A- -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">A-</div>
+                            <h2 class="blood-group-title">A Negative</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">8% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">A+, A-, AB+, AB-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">A-, O-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Universal platelet donor</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- B+ -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">B+</div>
+                            <h2 class="blood-group-title">B Positive</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">32% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">B+, AB+</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">B+, B-, O+, O-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Contains B antigen</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- B- -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">B-</div>
+                            <h2 class="blood-group-title">B Negative</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">9% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">B+, B-, AB+, AB-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">B-, O-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Rare blood type</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AB+ -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">AB+</div>
+                            <h2 class="blood-group-title">AB Positive</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">7% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">AB+ only</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">All blood types</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Universal recipient</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AB- -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">AB-</div>
+                            <h2 class="blood-group-title">AB Negative</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">2% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">AB+, AB-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">AB-, A-, B-, O-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Rarest blood type</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- O+ -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">O+</div>
+                            <h2 class="blood-group-title">O Positive</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">37% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">O+, A+, B+, AB+</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">O+, O-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Most common type</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- O- -->
+                    <div class="blood-group-card">
+                        <div class="blood-group-header">
+                            <div class="blood-group-icon">O-</div>
+                            <h2 class="blood-group-title">O Negative</h2>
+                        </div>
+                        <div class="blood-group-info">
+                            <div class="info-item">
+                                <span class="info-label">Population:</span>
+                                <span class="info-value">2% in India</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Donate To:</span>
+                                <span class="info-value">All blood types</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Can Receive From:</span>
+                                <span class="info-value">O- only</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Key Feature:</span>
+                                <span class="info-value">Universal donor</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compatibility Section -->
+                <div class="compatibility-section">
+                    <h3 class="compatibility-title">🩺 Blood Compatibility Guide</h3>
+                    <div class="compatibility-grid">
+                        <div class="compatibility-card">
+                            <div class="compatibility-blood-group">O-</div>
+                            <div class="compatibility-details">
+                                Universal Donor<br>Can donate to all blood types
+                            </div>
+                        </div>
+                        <div class="compatibility-card">
+                            <div class="compatibility-blood-group">AB+</div>
+                            <div class="compatibility-details">
+                                Universal Recipient<br>Can receive from all blood types
+                            </div>
+                        </div>
+                        <div class="compatibility-card">
+                            <div class="compatibility-blood-group">A-</div>
+                            <div class="compatibility-details">
+                                Universal Platelet Donor<br>Ideal for platelet donations
+                            </div>
+                        </div>
+                        <div class="compatibility-card">
+                            <div class="compatibility-blood-group">O+</div>
+                            <div class="compatibility-details">
+                                Most Needed<br>Most common emergency blood type
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facts Section -->
+                <div class="facts-section">
+                    <h3 class="facts-title">💡 Important Blood Facts</h3>
+                    <div class="facts-grid">
+                        <div class="fact-card">
+                            <div class="fact-icon">🔄</div>
+                            <div class="fact-text">
+                                Blood regenerates every 56 days. Regular donation is safe and healthy.
+                            </div>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-icon">⏱️</div>
+                            <div class="fact-text">
+                                One blood donation can save up to 3 lives through different components.
+                            </div>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-icon">🎯</div>
+                            <div class="fact-text">
+                                Knowing your blood type is crucial for emergencies and medical treatments.
+                            </div>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-icon">🔬</div>
+                            <div class="fact-text">
+                                Blood type is determined by genetics and remains constant throughout life.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to blood group cards
+            const cards = document.querySelectorAll('.blood-group-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add click effect to compatibility cards
+            const compCards = document.querySelectorAll('.compatibility-card');
+            compCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

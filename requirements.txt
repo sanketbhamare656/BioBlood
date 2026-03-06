@@ -1,0 +1,19 @@
+# Flask
+# Werkzeug
+# Jinja2
+# itsdangerous
+# click
+# MarkupSafe
+# opencv-python
+# numpy
+# pandas
+Flask
+Werkzeug
+Jinja2
+itsdangerous
+click
+MarkupSafe
+
+opencv-python-headless
+numpy
+pandas

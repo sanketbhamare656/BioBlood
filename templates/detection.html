@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Group Detection - BioBlood ID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #e53935;
+        }
+
+        .nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: #e53935;
+        }
+
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #e53935;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #e53935;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+        }
+
+        /* Detection Section */
+        .detection-section {
+            padding: 80px 0;
+        }
+
+        .detection-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        /* Scanner */
+        .scanner-container {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .scanner-visual {
+            flex: 1;
+            position: relative;
+        }
+
+        .fingerprint-scanner {
+            width: 300px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .scanner-device {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .scanner-screen {
+            width: 90%;
+            height: 70%;
+            background: #1a1a1a;
+            margin: 15% auto 0;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fingerprint-placeholder {
+            width: 80%;
+            height: 60%;
+            background:
+                radial-gradient(circle at 30% 30%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 70% 30%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 50% 50%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 30% 70%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 70% 70%, #e53935 5%, transparent 5.5%),
+                repeating-linear-gradient(45deg, transparent, transparent 5px, #333 5px, #333 10px);
+            border-radius: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to bottom, rgba(229, 57, 53, 0.8), rgba(229, 57, 53, 0.2));
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .scanner-controls {
+            flex: 1;
+            text-align: left;
+        }
+
+        .control-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .control-description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* File Upload */
+        .file-upload-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #f8f9fa;
+            border: 2px dashed #e53935;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .file-label:hover {
+            background: #ffeaea;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid #e53935;
+        }
+
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .blood-group-result {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #e53935;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Person Details Table */
+        .person-details {
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .person-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .person-details th {
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .person-details td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .person-details tr:last-child td {
+            border-bottom: none;
+        }
+
+        .person-details tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e53935;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* No Match Message */
+        .no-match {
+            display: none;
+            text-align: center;
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #c62828;
+        }
+
+        /* Recent Scans */
+        .recent-scans {
+            margin-top: 50px;
+        }
+
+        .scans-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #222;
+            text-align: left;
+        }
+
+        .scans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .scan-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+
+        .scan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .scan-blood-group {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e53935;
+        }
+
+        .scan-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .scan-user {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .scan-id {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .scanner-container {
+                flex-direction: column;
+            }
+
+            .scanner-controls {
+                text-align: center;
+            }
+
+            .fingerprint-scanner {
+                width: 250px;
+                height: 350px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .person-details {
+                overflow-x: auto;
+            }
+        }
+        .sample-download{
+    background: #fff3cd;
+    color: #856404;
+    text-align: center;
+    padding: 10px;
+    font-weight: 500;
+    border-bottom: 1px solid #ffeeba;
+}
+
+.sample-download a{
+    color: #e53935;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.sample-download a:hover{
+    text-decoration: underline;
+}
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">🩸</div>
+                <span class="logo-text">BioBlood ID</span>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#" class="active">Detection</a></li>
+                    <!-- <li><a href="#">Blood Groups</a></li> -->
+
+                </ul>
+            </nav>
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <span>Admin</span>
+                <a href="{{ url_for('detection.logout') }}" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </header>
+    <!-- Sample Data Download Banner -->
+    <div class="sample-download">
+        📥 Click here to download the sample fingerprint dataset :
+        <a href="https://drive.google.com/drive/folders/1Lyr7eu1Vet_aonkRfddiU0VGgXVUVyHP?usp=sharing" target="_blank">
+            Download Sample Data
+        </a>
+    </div>
+    <!-- Detection Section -->
+    <section class="detection-section">
+        <div class="container">
+            <div class="detection-container">
+                <h1 class="section-title">Blood Group Detection</h1>
+                <p class="section-subtitle">Upload fingerprint image to detect blood group with 99.8% accuracy</p>
+
+                <!-- Flask Form -->
+                <form method="POST" enctype="multipart/form-data" id="detectionForm">
+                    <div class="scanner-container">
+                        <div class="scanner-visual">
+                            <div class="fingerprint-scanner">
+                                <div class="scanner-device">
+                                    <div class="scanner-screen">
+                                        <div class="fingerprint-placeholder">
+                                            <div class="scan-line"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="scanner-controls">
+                            <h3 class="control-title">Fingerprint Scanner</h3>
+                            <p class="control-description">
+                                Upload fingerprint image to detect blood group instantly.
+                                Our advanced biometric technology analyzes fingerprint patterns to
+                                accurately determine blood type.
+                            </p>
+
+                            <!-- File Upload -->
+                            <div class="file-upload-container">
+                                <input type="file" id="finger_image" name="finger_image" accept="image/*"
+                                    class="file-input" required>
+                                <label for="finger_image" class="file-label">
+                                    📁 Choose Fingerprint Image
+                                </label>
+                                <div class="file-name" id="fileName">No file chosen</div>
+                            </div>
+
+                            <button type="submit" class="btn" id="scanBtn" disabled>
+                                Start Scanning
+                            </button>
+
+                            <div class="loading" id="scanLoading">
+                                <div class="spinner"></div>
+                                <p>Scanning fingerprint... Analyzing blood group...</p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Results Section -->
+                {% if result %}
+                <div class="results-section" id="resultsSection" style="display: block;">
+                    <h3 class="results-title">Scan Results</h3>
+
+                    {% if result != None %}
+                    <div class="blood-group-result">{{ result.blood_group }}</div>
+
+                    <div class="person-details">
+                        <table>
+                            <tr>
+                                <th>ID</th>
+                                <td>{{ result.person_id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Name</th>
+                                <td>{{ result.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Age</th>
+                                <td>{{ result.age }}</td>
+                            </tr>
+                            <tr>
+                                <th>DOB</th>
+                                <td>{{ result.dob }}</td>
+                            </tr>
+                            <tr>
+                                <th>Blood Group</th>
+                                <td>{{ result.blood_group }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- <button class="btn" style="margin-top: 20px;" onclick="saveResult()">Save Result</button> -->
+                    {% else %}
+                    <div class="no-match" style="display: block;">
+                        <h3>❌ No Match Found</h3>
+                        <p>No matching fingerprint found in the database. Please try again with a different image.</p>
+                    </div>
+                    {% endif %}
+
+                    <button class="btn btn-secondary" style="margin-top: 20px;" onclick="newScan()">New Scan</button>
+                </div>
+                {% else %}
+                <div class="results-section" id="resultsSection">
+                    <h3 class="results-title">Scan Results</h3>
+                    <div class="no-match" id="noMatchMessage">
+                        <h3>❌ No Match Found</h3>
+                        <p>No matching fingerprint found in the database. Please try again with a different image.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Recent Scans
+                <div class="recent-scans">
+                    <h3 class="scans-title">Recent Scans</h3>
+                    <div class="scans-grid">
+                        <div class="scan-card">
+                            <div class="scan-header">
+                                <div class="scan-blood-group">A+</div>
+                                <div class="scan-date">2 min ago</div>
+                            </div>
+                            <div class="scan-user">John Doe</div>
+                            <div class="scan-id">ID: #BG-7842</div>
+                        </div>
+                        <div class="scan-card">
+                            <div class="scan-header">
+                                <div class="scan-blood-group">O-</div>
+                                <div class="scan-date">5 min ago</div>
+                            </div>
+                            <div class="scan-user">Sarah Smith</div>
+                            <div class="scan-id">ID: #BG-7841</div>
+                        </div>
+                        <div class="scan-card">
+                            <div class="scan-header">
+                                <div class="scan-blood-group">AB+</div>
+                                <div class="scan-date">10 min ago</div>
+                            </div>
+                            <div class="scan-user">Mike Johnson</div>
+                            <div class="scan-id">ID: #BG-7840</div>
+                        </div>
+                        <div class="scan-card">
+                            <div class="scan-header">
+                                <div class="scan-blood-group">B-</div>
+                                <div class="scan-date">15 min ago</div>
+                            </div>
+                            <div class="scan-user">Emily Brown</div>
+                            <div class="scan-id">ID: #BG-7839</div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // File input handling
+        document.getElementById('finger_image').addEventListener('change', function (e) {
+            const fileName = document.getElementById('fileName');
+            const scanBtn = document.getElementById('scanBtn');
+
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+                scanBtn.disabled = false;
+            } else {
+                fileName.textContent = 'No file chosen';
+                scanBtn.disabled = true;
+            }
+        });
+
+        // Form submission with 3-second loading delay
+        document.getElementById('detectionForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent immediate submission
+
+            const scanBtn = document.getElementById('scanBtn');
+            const loading = document.getElementById('scanLoading');
+            const results = document.getElementById('resultsSection');
+
+            // Show loading and hide results
+            scanBtn.disabled = true;
+            loading.style.display = 'block';
+            results.style.display = 'none';
+
+            // Show loading for 3 seconds then submit
+            setTimeout(() => {
+                this.submit(); // Submit form after 3 seconds
+            }, 3000);
+        });
+
+        // Save result function
+        function saveResult() {
+            alert('Result saved successfully to database!');
+        }
+
+        // New scan function
+        function newScan() {
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('detectionForm').reset();
+            document.getElementById('fileName').textContent = 'No file chosen';
+            document.getElementById('scanBtn').disabled = true;
+            document.getElementById('scanLoading').style.display = 'none'; // Hide loading on new scan
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add click effect to scanner
+            const scanner = document.querySelector('.scanner-screen');
+            scanner.addEventListener('click', function () {
+                document.getElementById('finger_image').click();
+            });
+        });
+    </script>
+</body>
+
+</html>

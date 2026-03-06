@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fingerprint Blood Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .preloader-content {
+            text-align: center;
+        }
+
+        .fingerprint-scanner {
+            position: relative;
+            width: 120px;
+            height: 160px;
+            margin: 0 auto 20px;
+        }
+
+        .fingerprint {
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 30% 30%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 70% 30%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 50% 50%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 30% 70%, #e53935 5%, transparent 5.5%),
+                radial-gradient(circle at 70% 70%, #e53935 5%, transparent 5.5%),
+                repeating-linear-gradient(45deg, transparent, transparent 5px, #f5f5f5 5px, #f5f5f5 10px);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to bottom, rgba(229, 57, 53, 0.8), rgba(229, 57, 53, 0.2));
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .scan-text {
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .countdown {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e53935;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #e53935;
+        }
+
+        .nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: #e53935;
+        }
+
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #e53935;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f5f5f5 0%, #fff 100%);
+            overflow: hidden;
+        }
+
+        .hero .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #e53935;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
+        }
+
+        .hero-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .blood-drop {
+            width: 300px;
+            height: 400px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(229, 57, 53, 0.3);
+        }
+
+        .fingerprint-inside {
+            width: 70%;
+            height: 70%;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 5%, transparent 5.5%),
+                radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.8) 5%, transparent 5.5%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 5%, transparent 5.5%),
+                radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.8) 5%, transparent 5.5%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.8) 5%, transparent 5.5%),
+                repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255, 255, 255, 0.2) 5px, rgba(255, 255, 255, 0.2) 10px);
+            border-radius: 10px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Get Started Section */
+        .get-started {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .get-started h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .get-started p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .get-started .btn {
+            background: white;
+            color: #e53935;
+            font-size: 1.1rem;
+            padding: 15px 40px;
+        }
+
+        .get-started .btn:hover {
+            background: #f5f5f5;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Why Section */
+        .why-section {
+            padding: 80px 0;
+            background: #fff;
+        }
+
+        .why-section h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 50px;
+            color: #222;
+        }
+
+        .why-content {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .why-text {
+            flex: 1;
+        }
+
+        .why-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .why-image {
+            flex: 1;
+        }
+
+        .comparison {
+            display: flex;
+            gap: 20px;
+        }
+
+        .old-method,
+        .new-method {
+            flex: 1;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .old-method {
+            background: #f5f5f5;
+        }
+
+        .new-method {
+            background: #e8f5e9;
+            border-top: 4px solid #4caf50;
+        }
+
+        .old-method h3,
+        .new-method h3 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .method-icon {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .old-method ul,
+        .new-method ul {
+            list-style: none;
+        }
+
+        .old-method li,
+        .new-method li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .old-method li:before {
+            content: "✕";
+            position: absolute;
+            left: 0;
+            color: #e53935;
+        }
+
+        .new-method li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #f5f5f5;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 50px;
+            color: #222;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        /* Footer */
+        .footer {
+            background: #222;
+            color: #fff;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #fff;
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .newsletter-form input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .newsletter-form button {
+            padding: 10px;
+            background: #e53935;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .newsletter-form button:hover {
+            background: #c62828;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #aaa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .why-content {
+                flex-direction: column;
+            }
+
+            .comparison {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav ul {
+                gap: 15px;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .get-started h2 {
+                font-size: 2rem;
+            }
+        }
+
+        .hero {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f5f5f5 0%, #fff 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+.hero .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+}
+
+.hero-content {
+    flex: 1;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #666;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #e53935;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #c62828;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
+}
+
+.hero-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.blood-container {
+    position: relative;
+    width: 300px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.blood-3d {
+    width: 280px;
+    height: 380px;
+    filter: drop-shadow(0 10px 25px rgba(229, 57, 53, 0.4));
+    animation: float-3d 4s ease-in-out infinite, rotate-3d 8s linear infinite;
+    z-index: 3;
+    position: relative;
+}
+
+@keyframes float-3d {
+    0%, 100% {
+        transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+    }
+    25% {
+        transform: translateY(-15px) rotateX(5deg) rotateY(5deg);
+    }
+    50% {
+        transform: translateY(-5px) rotateX(-3deg) rotateY(-3deg);
+    }
+    75% {
+        transform: translateY(-10px) rotateX(3deg) rotateY(-5deg);
+    }
+}
+
+@keyframes rotate-3d {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(360deg);
+    }
+}
+
+.pulse-ring {
+    position: absolute;
+    border: 2px solid #e53935;
+    border-radius: 50%;
+    opacity: 0;
+    animation: pulse 3s linear infinite;
+}
+
+.ring-1 {
+    width: 200px;
+    height: 200px;
+    animation-delay: 0s;
+}
+
+.ring-2 {
+    width: 300px;
+    height: 300px;
+    animation-delay: 1s;
+}
+
+.ring-3 {
+    width: 400px;
+    height: 400px;
+    animation-delay: 2s;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+}
+
+.glow-effect {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(229, 57, 53, 0.3) 0%, rgba(229, 57, 53, 0) 70%);
+    border-radius: 50%;
+    animation: glow-pulse 2s ease-in-out infinite alternate;
+    z-index: 1;
+}
+
+@keyframes glow-pulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Blood Drip Animation */
+.blood-container::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 30px;
+    background: linear-gradient(to bottom, #e53935, transparent);
+    border-radius: 0 0 4px 4px;
+    animation: drip 2.5s ease-in-out infinite;
+    z-index: 2;
+}
+
+@keyframes drip {
+    0%, 100% {
+        height: 30px;
+        opacity: 0.7;
+    }
+    50% {
+        height: 50px;
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .hero .container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    
+    .blood-container {
+        width: 250px;
+        height: 350px;
+    }
+    
+    .blood-3d {
+        width: 230px;
+        height: 320px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .blood-container {
+        width: 200px;
+        height: 280px;
+    }
+    
+    .blood-3d {
+        width: 180px;
+        height: 250px;
+    }
+    
+    .ring-1 { width: 150px; height: 150px; }
+    .ring-2 { width: 220px; height: 220px; }
+    .ring-3 { width: 300px; height: 300px; }
+}
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <!-- <div class="preloader">
+        <div class="preloader-content">
+            <div class="fingerprint-scanner">
+                <div class="fingerprint"></div>
+                <div class="scan-line"></div>
+            </div>
+            <p class="scan-text">We scan the blood group using fingerprint</p>
+            <div class="countdown">5</div>
+        </div>
+    </div> -->
+
+    <!-- Header with Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">🩸</div>
+                <span class="logo-text">BioBlood ID</span>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#detection" class="detection-link">Detection</a></li>
+                    <li><a href="{{ url_for('blood_group') }}">Blood Groups</a></li>
+                    <!-- <li><a href="#">Help</a></li>
+                    <li><a href="#">Contact Us</a></li> -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Fingerprint-Based Blood Group Detection System</h1>
+            <p class="hero-subtitle">Identify a person's blood group instantly using advanced fingerprint biometrics technology.</p>
+            <a href="#get-started" class="btn">Get Started</a>
+        </div>
+        <div class="hero-visual">
+            <div class="blood-container">
+                <img src="{{ url_for('static', filename='images/blood.png') }}" alt="Blood Drop" class="">
+                <div class="pulse-ring ring-1"></div>
+                <div class="pulse-ring ring-2"></div>
+                <div class="pulse-ring ring-3"></div>
+                <div class="glow-effect"></div>
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- Get Started Section -->
+    <section class="get-started" id="get-started">
+        <div class="container">
+            <h2>Ready to Experience the Future of Blood Testing?</h2>
+            <p>Our advanced fingerprint scanning technology provides instant, non-invasive blood group detection with
+                99.8% accuracy.</p>
+            <a href="{{ url_for('detection.login') }}" class="btn">Start Detection Now</a>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="why-section">
+        <div class="container">
+            <h2>Why This Software Is Needed</h2>
+            <div class="why-content">
+                <div class="why-text">
+                    <p>Traditional blood group testing requires blood samples, specialized equipment, and trained
+                        personnel. Our fingerprint-based system revolutionizes this process by providing instant,
+                        non-invasive blood group detection.</p>
+
+                    <p>This technology is especially crucial in emergency situations, medical facilities, and blood
+                        donation centers where time is critical.</p>
+
+                    <p>After that, anytime you need to know your blood group - whether in an emergency, at a hospital,
+                        or during blood donation - simply scan your fingerprint! Our system will instantly retrieve your
+                        blood group information without any needles, blood samples, or repeated testing.
+                    </p>
+                </div>
+                <div class="why-image">
+                    <div class="comparison">
+                        <div class="old-method">
+                            <h3>Traditional Method</h3>
+                            <div class="method-icon">💉</div>
+                            <ul>
+                                <li>Requires blood sample</li>
+                                <li>Time-consuming process</li>
+                                <li>Needs specialized equipment</li>
+                                <li>Invasive procedure</li>
+                            </ul>
+                        </div>
+                        <div class="new-method">
+                            <h3>Our Technology</h3>
+                            <div class="method-icon">👆</div>
+                            <ul>
+                                <li>Non-invasive fingerprint scan</li>
+                                <li>Instant results</li>
+                                <li>Portable and easy to use</li>
+                                <li>No specialized training needed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2>What We Provide</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Data</h3>
+                    <p>All biometric and medical data is encrypted and stored with military-grade security protocols.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Quick Response</h3>
+                    <p>Get blood group results in seconds, not minutes, with our advanced scanning technology.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Accurate Analysis</h3>
+                    <p>Our system boasts 99.8% accuracy in blood group detection from fingerprint patterns.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Easy Integration</h3>
+                    <p>Seamlessly integrates with existing hospital and medical record systems.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <div class="logo-icon">🩸</div>
+                        <span class="logo-text">BioBlood ID</span>
+                    </div>
+                    <p>Revolutionizing blood group detection through advanced biometric technology.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#detection" class="detection-link">Detection</a></li>
+                        <li><a href="#">Blood Groups</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <ul>
+                        <li>Email: info@biobloodid.com</li>
+                        <li>Phone: +1 (555) 123-4567</li>
+                        <li>Address: 123 Medical Tech Park, Health City</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Subscribe to Our Newsletter</h3>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email address">
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p ><a href="https://sanketbhamare.vercel.app/" style="text-decoration: none; color: #c62828;"> &copy; 2023 BioBlood ID. All rights reserved.</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Preloader functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const preloader = document.querySelector('.preloader');
+            const countdownElement = document.querySelector('.countdown');
+
+            let countdown = 5;
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    preloader.style.opacity = '0';
+                    setTimeout(() => {
+                        preloader.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Detection link redirect
+            document.querySelectorAll('.detection-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    window.location.href = "{{ url_for('detection.login') }}";
+                });
+            });
+
+            // Sticky header background on scroll
+            window.addEventListener('scroll', function () {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Newsletter form submission
+            document.querySelector('.newsletter-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                if (email) {
+                    alert('Thank you for subscribing to our newsletter!');
+                    this.reset();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
